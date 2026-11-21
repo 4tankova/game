@@ -1,0 +1,17 @@
+{
+  "name": "РІНО. Народжені бути незламними",
+  "short_name": "РІНО",
+  "description": "Гра «три в ряд» про носоріжка Ріно. 4 ОВМБр.",
+  "lang": "uk",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1a200d",
+  "theme_color": "#2b3514",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
