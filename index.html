@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>РІНО. Народжені бути незламними</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Russo+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="modern.css">
+</head>
+<body>
+<div id="bgLayer" aria-hidden="true"></div>
+<canvas id="amb" aria-hidden="true"></canvas>
+
+<div id="homeScreen" class="screen">
+  <header class="top">
+    <h1 class="logo">РІНО</h1>
+    <button class="icon" id="editBtn2" hidden type="button" aria-label="Редактор гри" title="Редактор гри">✎</button>
+    <div class="wallet" title="Життя"><i class="heart"></i><span id="lives">5/5</span></div>
+    <div class="wallet" title="Зірки">★ <span id="starsAll">0</span></div>
+    <div class="wallet" title="Монети"><i class="coin"></i><span id="coins">0</span></div>
+  </header>
+  <div class="hero">
+    <i class="buddy" id="hubBuddy"></i>
+    <div class="bubble" id="hubTalk"></div>
+  </div>
+  <button class="primary playBig" id="playBtn" type="button">Грати · Рівень 1</button>
+  <div class="streak" id="streak"></div>
+  <section class="trackBox">
+    <div class="label">Нагороди за пройдені рівні</div>
+    <div id="track"></div>
+    <button id="trackBtn" type="button"></button>
+  </section>
+  <div id="hub"></div>
+</div>
+
+<div id="mapScreen" class="screen" hidden>
+  <header class="top">
+    <h1>Карта</h1>
+    <div class="wallet" title="Життя"><i class="heart"></i><span id="lives3">5/5</span></div>
+    <div class="wallet" title="Зірки">★ <span id="stars3">0</span></div>
+    <div class="wallet" title="Монети"><i class="coin"></i><span id="coins3">0</span></div>
+  </header>
+  <div id="map"></div>
+  <div class="finish" id="finish"></div>
+</div>
+
+<nav id="tabs" aria-label="Розділи гри">
+  <button id="journalBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h18v4H3zM5 14h14v7H5zM12 10v11M12 10C9 10 6 9 7 6.5S11 6 12 10C13 6 16 4.5 17 6.5S15 10 12 10Z"/></svg><span>Призи</span></button>
+  <button id="tabHome" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3Z"/></svg><span>Головна</span></button>
+  <button id="tabMap" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3ZM9 3v15M15 6v15"/></svg><span>Карта</span></button>
+  <button id="gear" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v13H9l-5 4Z M8 9h8M8 13h5"/></svg><span>Правила</span></button>
+</nav>
+
+<div id="gameScreen" class="screen" hidden>
+  <header class="top">
+    <button class="icon" id="back" type="button" aria-label="До карти">←</button>
+    <div class="ttl"><b id="lvName">Рівень 1</b><span id="chName"></span></div>
+    <div class="wallet"><i class="coin"></i><span id="coins2">0</span></div>
+    <button class="icon" id="restart" type="button" aria-label="Почати рівень заново з тим самим полем" title="Заново">↻</button>
+    <button class="icon" id="gear2" type="button" aria-label="Налаштування і правила">⚙</button>
+  </header>
+  <div class="play">
+    <aside class="side">
+      <div class="hud">
+        <div class="box">
+          <div class="label">Цілі</div>
+          <div class="goals" id="goals"></div>
+        </div>
+        <i class="buddy big" id="buddy"></i>
+        <div class="box movesBox" id="movesBadge">
+          <div class="label" id="movesLabel">Ходів</div>
+          <b id="moves">0</b>
+          <div class="score">Рахунок <b id="score">0</b></div>
+        </div>
+        <div class="bossBar" id="bossBar" hidden>
+          <i class="bossImg" id="bossImg"></i>
+          <div class="bossInfo"><b id="bossName"></b><div class="hp"><i id="bossHp"></i><span id="bossHpT"></span></div><small id="bossNext"></small></div>
+        </div>
+      </div>
+      <div class="toast bubble" id="toast" aria-live="polite"></div>
+      <div class="row">
+        <button id="hammer" type="button" aria-label="Снайпер"><i id="hammerI"></i><small id="hammerN"></small></button>
+        <button id="rowhit" type="button" aria-label="Танк у ряд"><i id="rowhitI"></i><small id="rowhitN"></small></button>
+        <button id="colhit" type="button" aria-label="Танк у стовпчик"><i id="colhitI"></i><small id="colhitN"></small></button>
+        <button id="glove" type="button" aria-label="Маневр: обмін двох предметів"><i id="gloveI"></i><small id="gloveN"></small></button>
+        <button id="mix" type="button" aria-label="Перегрупування"><i id="mixI"></i><small id="mixN"></small></button>
+      </div>
+    </aside>
+    <div class="stage">
+      <div class="wrap" id="wrap">
+        <div class="field">
+          <div id="cells"></div>
+          <div id="board" aria-label="Ігрове поле"></div>
+          <div id="over"></div>
+          <canvas id="fx" aria-hidden="true"></canvas>
+          <div id="pops" aria-hidden="true"></div>
+        </div>
+        <button class="primary skip" id="skip" type="button" hidden>Пропустити ⏩</button>
+        <div class="overlay" id="overlay">
+          <i class="ovHero" id="ovHero" hidden></i>
+          <div class="stars" id="ovStars"></div>
+          <h2 id="ovTitle"></h2>
+          <p id="ovText"></p>
+          <div class="goals" id="ovGoals"></div>
+          <div class="extra" id="ovExtra"></div>
+          <div class="btns" id="ovBtns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settings">
+  <div class="sheet">
+    <div class="line">
+      <button id="sound" type="button">Звук: увімк.</button>
+      <button id="diff" type="button">Складність: звичайна</button>
+      <button id="full" type="button">На весь екран</button>
+      <button id="replayIntro" type="button">Заставка</button>
+      <button class="primary" id="closeSet" type="button">Закрити</button>
+    </div>
+    <button class="primary edOpen" id="editBtn" hidden type="button">✎ Редактор гри: назва, історія, камінці, бонуси, перешкоди, фони</button>
+    <h2>Музика</h2>
+    <div class="ambs" id="musicModes" role="group" aria-label="Фонова музика"></div>
+    <label class="rng" for="mvol">Гучність музики<input type="range" id="mvol" min="0" max="100" step="5"></label>
+    <ul hidden class="tracks" id="trackList"></ul>
+    <p hidden class="note" id="trackHint"></p>
+    <div class="line" hidden><button id="trackAdd" type="button">Додати свої треки</button></div>
+    <p class="note" id="musicMsg" aria-live="polite"></p>
+    <input type="file" id="trackFile" accept="audio/*" multiple hidden>
+    <h2>Техніка</h2>
+    <ul class="rules">
+      <li><i id="rPin"></i><span><b>Дрон</b> — 4 квадратом. Б'є по сусідах і сам летить до міни, дроту, орка чи сітки.</span></li>
+      <li><i id="rRow"></i><span><b>Танк</b> — 4 в ряд. Прострілює цілий ряд або стовпчик.</span></li>
+      <li><i id="rBomb"></i><span><b>Граната</b> — збіг кутом або літерою Т. Вибух довкола.</span></li>
+      <li><i id="rRain"></i><span><b>РСЗВ</b> — 5 в ряд. Запускає ракети по всіх предметах одного виду.</span></li>
+    </ul>
+    <p>Техніка спрацьовує від дотику. Проведіть одну техніку на іншу, і вони діятимуть разом: два танки б'ють хрестом, танк із гранатою чистить три ряди й три стовпчики, дві гранати дають великий вибух, дрон везе іншу техніку до цілі, а РСЗВ перетворює предмети на техніку.</p>
+    <h2>Перешкоди</h2>
+    <ul class="rules">
+      <li><i id="rIce"></i><span><b>Колючий дріт</b> — предмет не рухається. Знімається збігом поруч; подвійний дріт треба рвати двічі.</span></li>
+      <li><i id="rCrate"></i><span><b>Орк</b> — сидить на клітинці й не рухається. Б'ється збігом поруч або технікою. Орк у шоломі витримує два удари.</span></li><li><i id="rBoss"></i><span><b>Бос</b> — останній рівень кожної локації. Кожен розбитий предмет б'є по босу, техніка б'є втричі сильніше, розбитий орк — уп'ятеро. Кожні кілька ходів бос кличе нових орків.</span></li>
+      <li><i id="rRock"></i><span><b>Протитанковий їжак</b> — збіг його не бере, лише техніка або снайпер.</span></li>
+      <li><i id="rMoss"></i><span><b>Маскувальна сітка</b> — знімається, коли предмет під нею потрапляє у збіг.</span></li>
+      <li><i id="rFrost"></i><span><b>Мінне поле</b> — міни під предметами. Знешкоджуються збігом на них.</span></li>
+      <li><i id="rAmber"></i><span><b>Звільнена територія</b> — збіг, що торкається її, поширює прапор. Звільніть усе поле.</span></li>
+      <li><i id="rGem"></i><span><b>Розвіддані</b> — не знищуються. Доставте папку до нижнього краю поля.</span></li>
+      <li><i id="rFog"></i><span><b>Дим</b> — ховає предмети, розвіюється від збігу поруч.</span></li>
+      <li><i id="rMud"></i><span><b>Бруд</b> — розповзається, якщо за хід не прибрати жодної плями.</span></li>
+      <li><i id="rEmber"></i><span><b>Міна з таймером</b> — знешкодьте її збігом, поки лічильник не дійшов до нуля.</span></li>
+    </ul>
+    <p class="creditLine">4 ОВМБр представляє. При підтримці відділення ППП та ЦВС.</p>
+    <p>Рівні з годинником ідуть на час. Червоні рівні на карті складні, зате платять удвічі чи втричі більше. Серія перемог дає готову техніку на старті наступного рівня.</p>
+    <div class="line"><button id="wipe" type="button">Скинути прогрес</button></div>
+  </div>
+</div>
+
+<div class="modal" id="editor">
+  <div class="sheet edSheet">
+    <div class="edTop">
+      <div class="line"><h2 class="grow">Редактор гри</h2><button class="primary" id="closeEditor" type="button">Готово</button></div>
+      <nav class="ambs" id="edNav" aria-label="Розділи редактора">
+        <button type="button" data-to="edSecName">Назва</button><button type="button" data-to="edSecSym">Камінці</button>
+        <button type="button" data-to="edSecBonus">Бонуси</button><button type="button" data-to="edSecBlock">Перешкоди</button>
+        <button type="button" data-to="edSecHero">Персонаж</button><button type="button" data-to="edSecBg">Фони</button>
+        <button type="button" data-to="edSecStory">Історія</button><button type="button" data-to="edSecIntro">Заставка</button>
+      </nav>
+    </div>
+    <section id="edSecName">
+      <h2>Назва гри</h2>
+      <label class="rng" for="gName">Назва на головному екрані й заставці<input type="text" id="gName" maxlength="30" placeholder="Камінці"></label>
+      <label class="rng" for="gSub">Підпис на заставці<input type="text" id="gSub" maxlength="60" placeholder="Пригода семи оберегів"></label>
+    </section>
+    <section id="edSecSym">
+    <h2>Свої символи</h2>
+    <p>Торкніться камінця й оберіть картинку з пристрою. Найкраще виглядають квадратні зображення.</p>
+    <div class="slots" id="slots"></div>
+    <div class="line"><button id="resetImgs" type="button">Стандартні символи</button></div>
+    <label class="tog"><input type="checkbox" id="glossT"> Скляний блік на своїх картинках</label>
+    <input type="file" id="file" accept="image/*" hidden>
+    </section>
+    <section id="edSecBonus">
+      <h2>Бонуси</h2>
+      <p>Торкніться бонуса й оберіть свою картинку. Поведінка бонуса не зміниться, лише вигляд.</p>
+      <div class="mslots grid" id="edBonus"></div>
+    </section>
+    <section id="edSecBlock">
+      <h2>Перешкоди</h2>
+      <p>Лід, мох і крига лягають поверх камінця, тож для них краще підходять напівпрозорі PNG.</p>
+      <div class="mslots grid" id="edBlock"></div>
+      <div class="line"><button id="artReset" type="button">Стандартні бонуси й перешкоди</button></div>
+      <p class="note" id="artMsg" aria-live="polite"></p>
+      <input type="file" id="artFile" accept="image/*" hidden>
+    </section>
+    <section id="edSecHero">
+    <h2>Персонаж</h2>
+    <p>Замініть Кремінчика на свого героя. Для кожного настрою можна дати окрему картинку; анімовані GIF і WebP рухатимуться.</p>
+    <div class="mslots" id="mascotSlots"></div>
+    <label class="rng" for="mascotName">Ім'я персонажа<input type="text" id="mascotName" maxlength="20"></label>
+    <div class="line"><button id="mascotReset" type="button">Повернути Кремінчика</button></div>
+    <p class="note" id="mascotMsg" aria-live="polite"></p>
+    <input type="file" id="mascotFile" accept="image/*" hidden>
+    </section>
+    <section id="edSecBg">
+    <h2>Фони</h2>
+    <h3>Загальний фон і частинки</h3>
+    <p>Поставте свою картинку на фон гри й оберіть, що над нею рухатиметься.</p>
+    <div class="bgRow">
+      <i class="bgPrev" id="bgPrev"></i>
+      <div class="bgBtns">
+        <button id="bgPick" type="button">Обрати фон</button>
+        <button id="bgClear" type="button">Стандартний фон</button>
+      </div>
+    </div>
+    <p class="note" id="bgMsg" aria-live="polite"></p>
+    <label class="rng" for="bgDim">Затемнення фону, щоб камінці краще видно<input type="range" id="bgDim" min="0" max="70" step="5"></label>
+    <div class="ambs" id="ambs" role="group" aria-label="Частинки на фоні"></div>
+    <input type="file" id="bgFile" accept="image/*" hidden>
+      <h3>Фони розділів</h3>
+      <p>Фон розділу видно на всіх його рівнях і на карті.</p>
+      <div class="mslots grid" id="edChBg"></div>
+      <h3>Фон окремого рівня</h3>
+      <div class="lvRow">
+        <label class="rng" for="edLvNum">Номер рівня<input type="number" id="edLvNum" min="1" max="70" inputmode="numeric"></label>
+        <button id="edLvPick" type="button">Обрати фон</button>
+      </div>
+      <ul class="tracks" id="edLvList"></ul>
+      <p class="note" id="bgEdMsg" aria-live="polite"></p>
+      <input type="file" id="edBgFile" accept="image/*" hidden>
+    </section>
+    <section id="edSecStory">
+      <h2>Історія</h2>
+      <p>Порожнє поле означає стандартний текст. Зміни зберігаються, щойно ви виходите з поля.</p>
+      <div id="edStory"></div>
+      <div class="line"><button id="storyReset" type="button">Стандартна історія</button></div>
+      <p class="note" id="storyMsg" aria-live="polite"></p>
+    </section>
+    <section id="edSecIntro">
+    <h2>Заставка</h2>
+    <label class="tog"><input type="checkbox" id="introT"> Показувати заставку під час запуску</label>
+    <p class="note" id="introState"></p>
+    <div class="line">
+      <button id="introPick" type="button">Своє відео</button>
+      <button id="introClear" type="button">Прибрати відео</button>
+      <button id="introPlay" type="button">Переглянути</button>
+    </div>
+    <p class="note" id="introMsg" aria-live="polite"></p>
+    <input type="file" id="introFile" accept="video/*" hidden>
+    </section>
+  </div>
+</div>
+
+<div class="modal" id="journal">
+  <div class="sheet">
+    <div class="line"><h2 class="grow">Призи та щоденник</h2><button class="primary" id="closeJournal" type="button">Закрити</button></div>
+    <div id="journalBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="mini">
+  <div class="sheet game">
+    <div class="line"><h2 class="grow" id="miniTitle"></h2><button id="closeMini" type="button" aria-label="Закрити">✕</button></div>
+    <div id="miniBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="story">
+  <div class="sheet tale">
+    <i class="art" id="stArt"></i>
+    <h2 id="stTitle"></h2>
+    <p id="stText"></p>
+    <button class="primary" id="stBtn" type="button">Далі</button>
+    <button id="stAlt" type="button" hidden></button>
+    <div class="confetti" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<div id="intro" role="dialog" aria-label="Заставка">
+  <div class="scn sc">
+    <div class="credits">
+      <p class="cr1"><b>4 ОВМБр</b><span>представляє</span></p>
+      <p class="cr2">При підтримці відділення ППП та ЦВС</p>
+    </div>
+  </div>
+  <div class="scn s4">
+    <svg class="sky" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><linearGradient id="sk4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9b8"/><stop offset=".55" stop-color="#fff1d6"/><stop offset="1" stop-color="#e8f6d8"/></linearGradient></defs>
+      <rect width="400" height="700" fill="url(#sk4)"/><circle cx="200" cy="470" r="90" fill="#fff3b0" opacity=".7"/>
+      <path d="M0 500Q120 450 220 480T400 470V700H0Z" fill="#a6d679"/>
+      <path d="M44 520V330" stroke="#6b4a2e" stroke-width="12"/><path d="M44 400L84 360M44 440L10 400" stroke="#6b4a2e" stroke-width="7"/>
+      <g fill="#ffc2d6"><circle cx="44" cy="320" r="40"/><circle cx="84" cy="350" r="30"/><circle cx="10" cy="370" r="30"/><circle cx="60" cy="290" r="26"/></g>
+      <g fill="#ff9fc0"><circle cx="30" cy="330" r="10"/><circle cx="70" cy="345" r="8"/><circle cx="48" cy="300" r="7"/></g>
+      <path d="M0 580Q140 530 260 570T400 560V700H0Z" fill="#7fc25a"/>
+      <g fill="#fff"><circle cx="300" cy="600" r="5"/><circle cx="330" cy="625" r="5"/><circle cx="80" cy="640" r="5"/><circle cx="140" cy="610" r="5"/><circle cx="360" cy="590" r="5"/></g>
+      <g fill="#ffd23a"><circle cx="300" cy="600" r="2"/><circle cx="330" cy="625" r="2"/><circle cx="80" cy="640" r="2"/><circle cx="140" cy="610" r="2"/><circle cx="360" cy="590" r="2"/></g>
+    </svg>
+    <i class="petal p1"></i><i class="petal p2"></i><i class="petal p3"></i><i class="petal p4"></i>
+    <div class="rinoBig bob" id="rinoE"></div>
+    <p class="cap">8 березня 2022 року, коли весна тільки пробуджувала землю, на світ з'явився маленький носоріжок Ріно: з крихітним ріжком, великими допитливими очима й неймовірно добрим серцем.</p>
+  </div>
+  <div class="scn s0">
+    <svg class="sky" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><linearGradient id="sk0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fc3f5"/><stop offset="1" stop-color="#e6f6ff"/></linearGradient></defs>
+      <rect width="400" height="700" fill="url(#sk0)"/><circle cx="320" cy="120" r="46" fill="#fff4b0"/><circle cx="320" cy="120" r="70" fill="#fff4b0" opacity=".25"/>
+      <path d="M0 470Q100 400 200 450T400 430V700H0Z" fill="#8cc35c"/>
+      <g fill="#fff"><rect x="60" y="440" width="44" height="34"/><rect x="250" y="452" width="40" height="30"/></g>
+      <g fill="#c8553d"><path d="M54 442L82 418L110 442Z"/><path d="M244 454L270 432L296 454Z"/></g>
+      <path d="M0 540Q120 480 240 530T400 520V700H0Z" fill="#5f9e3a"/>
+      <g><circle cx="30" cy="580" r="9" fill="#ffd23a"/><circle cx="30" cy="580" r="4" fill="#6b4a2e"/><circle cx="70" cy="600" r="9" fill="#ffd23a"/><circle cx="70" cy="600" r="4" fill="#6b4a2e"/><circle cx="120" cy="575" r="9" fill="#ffd23a"/><circle cx="120" cy="575" r="4" fill="#6b4a2e"/><circle cx="170" cy="610" r="9" fill="#ffd23a"/><circle cx="170" cy="610" r="4" fill="#6b4a2e"/><circle cx="230" cy="590" r="9" fill="#ffd23a"/><circle cx="230" cy="590" r="4" fill="#6b4a2e"/><circle cx="280" cy="615" r="9" fill="#ffd23a"/><circle cx="280" cy="615" r="4" fill="#6b4a2e"/><circle cx="330" cy="585" r="9" fill="#ffd23a"/><circle cx="330" cy="585" r="4" fill="#6b4a2e"/><circle cx="370" cy="605" r="9" fill="#ffd23a"/><circle cx="370" cy="605" r="4" fill="#6b4a2e"/><circle cx="50" cy="640" r="9" fill="#ffd23a"/><circle cx="50" cy="640" r="4" fill="#6b4a2e"/><circle cx="150" cy="650" r="9" fill="#ffd23a"/><circle cx="150" cy="650" r="4" fill="#6b4a2e"/><circle cx="260" cy="655" r="9" fill="#ffd23a"/><circle cx="260" cy="655" r="4" fill="#6b4a2e"/><circle cx="350" cy="645" r="9" fill="#ffd23a"/><circle cx="350" cy="645" r="4" fill="#6b4a2e"/></g>
+    </svg>
+    <i class="bird b1"></i><i class="bird b2"></i><i class="bird b3"></i>
+    <div class="rinoBig bob" id="rinoA"></div>
+    <p class="cap">Ріно народився в Україні, країні безкраїх полів, квітучих садів і синього неба. Він мріяв про пригоди, нових друзів і великі відкриття.</p>
+  </div>
+  <div class="scn s1">
+    <svg class="sky" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1626"/><stop offset=".55" stop-color="#9b3a2a"/><stop offset="1" stop-color="#f08a3a"/></linearGradient></defs>
+      <rect width="400" height="700" fill="url(#sk1)"/>
+      <path d="M0 480Q100 420 200 470T400 450V700H0Z" fill="#3b2a1e"/><path d="M0 560Q120 500 240 550T400 540V700H0Z" fill="#241a12"/>
+    </svg>
+    <i class="smoke k1"></i><i class="smoke k2"></i><i class="smoke k3"></i><i class="smoke k4"></i>
+    <div class="rinoBig shake" id="rinoB"></div>
+    <p class="cap">Але світ уже змінився. Небо здригалося від вибухів. «Як це — забрати країну? Хіба можна забрати чийсь дім?» — не розумів Ріно.</p>
+  </div>
+  <div class="scn s2">
+    <svg class="sky" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><linearGradient id="sk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4a2a"/><stop offset="1" stop-color="#c9c08a"/></linearGradient></defs>
+      <rect width="400" height="700" fill="url(#sk2)"/><circle cx="90" cy="150" r="40" fill="#ffe7a0" opacity=".8"/>
+      <path d="M0 500Q100 440 200 490T400 470V700H0Z" fill="#56652e"/><path d="M0 580Q120 520 240 570T400 560V700H0Z" fill="#3a4520"/>
+    </svg>
+    <svg class="droneS d1" viewBox="0 0 120 50" aria-hidden="true"><rect x="10" y="14" width="100" height="5" rx="2" fill="#2d333a"/><ellipse class="rot" cx="18" cy="10" rx="16" ry="3" fill="#cfd8de"/><ellipse class="rot" cx="102" cy="10" rx="16" ry="3" fill="#cfd8de"/><rect x="44" y="16" width="32" height="20" rx="6" fill="#56692b" stroke="#1d2410" stroke-width="2"/><circle cx="60" cy="38" r="5" fill="#2d333a"/><circle cx="60" cy="38" r="2" fill="#ff3b2b"/></svg>
+    <svg class="droneS d2" viewBox="0 0 120 50" aria-hidden="true"><rect x="10" y="14" width="100" height="5" rx="2" fill="#2d333a"/><ellipse class="rot" cx="18" cy="10" rx="16" ry="3" fill="#cfd8de"/><ellipse class="rot" cx="102" cy="10" rx="16" ry="3" fill="#cfd8de"/><rect x="44" y="16" width="32" height="20" rx="6" fill="#56692b" stroke="#1d2410" stroke-width="2"/><circle cx="60" cy="38" r="5" fill="#2d333a"/><circle cx="60" cy="38" r="2" fill="#ff3b2b"/></svg>
+    <svg class="tankS" viewBox="0 0 220 110" aria-hidden="true">
+      <rect x="20" y="72" width="180" height="30" rx="15" fill="#2b2f22" stroke="#15180f" stroke-width="3"/>
+      <g class="wheels" fill="#6b7556" stroke="#15180f" stroke-width="2"><circle cx="42" cy="87" r="10"/><circle cx="74" cy="87" r="10"/><circle cx="106" cy="87" r="10"/><circle cx="138" cy="87" r="10"/><circle cx="170" cy="87" r="10"/></g>
+      <path d="M14 74L34 50H190L206 74Z" fill="#5c6f2c" stroke="#2b3514" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M70 50L82 26H150L162 50Z" fill="#6f8a3a" stroke="#2b3514" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="156" y="32" width="64" height="9" rx="4" fill="#3f4f1e" stroke="#1d2410" stroke-width="2"/>
+      <rect x="92" y="36" width="14" height="7" fill="#2f6fd6"/><rect x="92" y="40" width="14" height="4" fill="#ffd23a"/>
+    </svg>
+    <div class="rinoBig" id="rinoC"></div>
+    <p class="cap">«Я маленький, але моя любов до України величезна! І я не дозволю нікому забрати мій дім!» Так почалася історія справжнього героя.</p>
+  </div>
+  <div class="scn s3">
+    <div class="titleBox">
+      <div class="rinoBig small bob" id="rinoD"></div>
+      <h1 class="introLogo">РІНО</h1>
+      <p class="introSub">4-та бригада · Народжені бути незламними</p>
+      <p class="introTap">Торкніться, щоб почати</p>
+    </div>
+  </div>
+  <div id="introBar" aria-hidden="true" hidden><i></i></div>
+  <p class="introHold" aria-hidden="true">Утримуйте палець, щоб зупинити · торкніться, щоб гортати</p>
+  <div id="introDots" aria-hidden="true"><i hidden></i><i></i><i></i><i></i><i></i><i></i></div>
+  <video id="introVideo" playsinline></video>
+  <button class="primary" id="introSkip" type="button">Пропустити ⏩</button>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/sets.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/game.js"></script>
+<script src="js/meta.js"></script>
+<script src="js/minis.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/look.js"></script>
+<script src="js/media.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/modern.js"></script>
+</body>
+</html>
